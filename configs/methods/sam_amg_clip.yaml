@@ -1,0 +1,13 @@
+name: sam_amg_clip
+status: planned
+requires_gpu: true
+external_repo: external/segment-anything
+weights:
+  sam: weights/sam_vit_b_01ec64.pth
+  clip: openai/clip-vit-base-patch16
+default_config:
+  device: cuda
+  mask_threshold: 0.5
+  min_component_area: 64
+  prompt_template: "a photo of a {}"
+description: Generate SAM automatic masks, score proposal crops against the fixed vocabulary with CLIP, and emit the best mask-label pair.

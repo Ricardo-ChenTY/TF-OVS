@@ -1,0 +1,6 @@
+name: sc_clip
+status: planned
+family: clip_dense_map
+strict_tf: true
+requires_gpu: true
+description: Backup SC-CLIP row, included after public implementation stability check.

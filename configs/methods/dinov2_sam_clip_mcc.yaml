@@ -1,0 +1,6 @@
+name: dinov2_sam_clip_mcc
+status: planned
+family: proposal_naming
+strict_tf: true
+requires_gpu: true
+description: DINOv2+SAM+CLIP with post-hoc mask-category consistency re-ranking.

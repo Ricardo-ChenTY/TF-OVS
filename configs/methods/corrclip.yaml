@@ -1,0 +1,6 @@
+name: corrclip
+status: planned
+family: clip_vfm
+strict_tf: true
+requires_gpu: true
+description: CorrCLIP patch-correlation reconstruction baseline.

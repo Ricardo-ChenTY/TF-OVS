@@ -1,0 +1,16 @@
+# Core
+numpy>=1.23
+pillow>=9.5
+pyyaml>=6.0
+tqdm>=4.64
+
+# Dataset preparation
+detail>=0.2       # PASCAL Context .mat → PNG conversion
+pycocotools>=2.0  # COCO annotation utilities
+
+# Tables / results
+pandas>=2.0
+
+# Dev
+pytest>=7.0
+ruff>=0.5

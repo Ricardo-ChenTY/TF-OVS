@@ -1,0 +1,6 @@
+name: resclip
+status: planned
+family: clip_dense_map
+strict_tf: true
+requires_gpu: true
+description: ResCLIP residual-attention dense vision-language baseline.

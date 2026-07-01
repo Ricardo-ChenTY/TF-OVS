@@ -1,0 +1,13 @@
+name: maskclip
+status: runnable
+family: clip_dense_map
+strict_tf: true
+requires_gpu: true
+weights:
+  clip: ViT-B-16/openai
+default_config:
+  device: cuda
+  image_size: 224
+  mask_threshold: 0.5
+  prompt_template: "a photo of a {}"
+description: CLIP patch-token dense-map baseline. This runnable lite variant validates the real-model TF-OVOS pipeline before full MaskCLIP attention surgery is added.

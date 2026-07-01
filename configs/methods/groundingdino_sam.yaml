@@ -1,0 +1,14 @@
+name: groundingdino_sam
+status: planned
+requires_gpu: true
+external_repo: external/Grounded-Segment-Anything
+weights:
+  groundingdino: weights/groundingdino_swint_ogc.pth
+  sam: weights/sam_vit_b_01ec64.pth
+default_config:
+  device: cuda
+  box_threshold: 0.25
+  text_threshold: 0.25
+  mask_threshold: 0.5
+  prompt_template: "{}"
+description: First real baseline target. Detect class-conditioned boxes with GroundingDINO, segment with SAM, and emit the highest-scoring mask-label pair.

@@ -1,0 +1,95 @@
+# TF-OVOS benchmark configuration (v25)
+#
+# Standard tier (E1/E2/E3 ranking): mIoU on semantic seg datasets.
+# Exploratory tier: additional readouts recorded per run (MCMR, delta_vocab, …).
+# Appendix: camouflaged-object datasets with mask-only / class-aware metrics.
+
+# ── Legacy appendix vocabularies ───────────────────────────────────────────
+vocabularies:
+  ovcamo_75: configs/vocab/ovcamo_75.txt
+  ovcamo_61_unseen: configs/vocab/ovcamo_61_unseen.txt
+
+# ── Standard-tier datasets (E1/E2/E3) ─────────────────────────────────────
+# task: semantic  → label-map PNG (pixel = class index), evaluated with mIoU
+# num_classes     → number of output classes (length of vocab)
+# void_label      → pixel value to ignore during evaluation (default 255)
+datasets:
+
+  # E1 + E3 standard targets
+  voc20_val:
+    manifest: data/manifests/voc20_val.jsonl
+    vocab: configs/vocab/voc20.txt
+    task: semantic
+    num_classes: 20
+    void_label: 255
+
+  context59_val:
+    manifest: data/manifests/context59_val.jsonl
+    vocab: configs/vocab/context_59.txt
+    task: semantic
+    num_classes: 59
+    void_label: 255
+
+  ade20k150_val:
+    manifest: data/manifests/ade20k150_val.jsonl
+    vocab: configs/vocab/ade20k_150.txt
+    task: semantic
+    num_classes: 150
+    void_label: 255
+
+  coco_stuff171_val:
+    manifest: data/manifests/coco_stuff171_val.jsonl
+    vocab: configs/vocab/coco_stuff_171.txt
+    task: semantic
+    num_classes: 171
+    void_label: 255
+    # TF-OVOS standard masks are 0-based. COCO predictions produced by the
+    # official-style pipelines follow the mmseg labelTrainIds convention and
+    # must be shifted back before standard evaluation.
+    prediction_label_offset: -1
+
+  # E2 large-vocabulary counterparts
+  context459_val:
+    manifest: data/manifests/context459_val.jsonl
+    vocab: configs/vocab/context_459.txt
+    task: semantic
+    num_classes: 459
+    void_label: 65535   # uint16 label maps; 255 is a valid class index
+
+  ade20k847_val:
+    manifest: data/manifests/ade20k847_val.jsonl
+    vocab: configs/vocab/ade20k_847.txt
+    task: semantic
+    num_classes: 847
+    void_label: 65535   # uint16 label maps; 255 is a valid class index
+
+  # ── Appendix hard-domain targets (mask-only / class-aware) ────────────────
+  ovcamo_te:
+    manifest: data/manifests/appendix/ovcamo_te.jsonl
+    task: class-aware
+
+  camo_te:
+    manifest: data/manifests/appendix/camo_te.jsonl
+    task: mask-only
+
+  cod10k_te_camo:
+    manifest: data/manifests/appendix/cod10k_te_camo.jsonl
+    task: mask-only
+
+  nc4k:
+    manifest: data/manifests/appendix/nc4k.jsonl
+    task: mask-only
+
+# ── Prediction schema ──────────────────────────────────────────────────────
+prediction_schema:
+  required: [image_id, mask_path, label]
+  optional: [score, metadata]
+
+# ── Adapter defaults ───────────────────────────────────────────────────────
+adapter_defaults:
+  image_size: 1024
+  mask_threshold: 0.5
+  min_component_area: 64
+  prompt_template: "a photo of a {}"
+
+method_configs: configs/methods

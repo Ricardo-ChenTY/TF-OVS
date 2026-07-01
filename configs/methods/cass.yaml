@@ -1,0 +1,6 @@
+name: cass
+status: planned
+family: clip_vfm
+strict_tf: true
+requires_gpu: true
+description: Backup CASS spectral object-context baseline, included after implementation check.

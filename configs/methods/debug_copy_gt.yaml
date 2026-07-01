@@ -1,0 +1,4 @@
+name: debug_copy_gt
+status: runnable
+requires_gpu: false
+description: Copies ground-truth masks for pipeline smoke tests only.

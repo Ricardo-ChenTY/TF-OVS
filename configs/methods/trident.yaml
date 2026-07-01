@@ -1,0 +1,6 @@
+name: trident
+status: planned
+family: clip_vfm
+strict_tf: true
+requires_gpu: true
+description: Trident CLIP+DINO+SAM high-resolution training-free OVSS baseline.

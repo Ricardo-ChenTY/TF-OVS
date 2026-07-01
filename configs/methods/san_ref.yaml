@@ -1,0 +1,10 @@
+# SAN — compact trained reference (not strict TF)
+# Xu et al., "Side Adapter Network for Open-Vocabulary Semantic Segmentation", CVPR 2023.
+name: san_ref
+family: trained_reference
+strict_tf: false
+backbone: CLIP-ViT-H/14
+training_source: COCO-Stuff-171
+setup_hint: >
+  Needs official SAN weights and the side-adapter inference code.
+  See https://github.com/MendelXu/SAN

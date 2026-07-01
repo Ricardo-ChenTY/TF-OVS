@@ -1,0 +1,11 @@
+# ODISE — compact trained reference (not strict TF)
+# Xu et al., "Open-Vocabulary Panoptic Segmentation with Text-to-Image Diffusion Models",
+# CVPR 2023.
+name: odise_ref
+family: trained_reference
+strict_tf: false
+backbone: Stable-Diffusion + CLIP
+training_source: COCO panoptic
+setup_hint: >
+  Needs official ODISE weights and the diffusion-based panoptic inference code.
+  See https://github.com/NVlabs/ODISE

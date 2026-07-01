@@ -1,0 +1,12 @@
+name: sclip
+status: planned
+requires_gpu: true
+external_repo: external/SCLIP
+weights:
+  clip: openai/clip-vit-base-patch16
+default_config:
+  device: cuda
+  mask_threshold: 0.5
+  min_component_area: 64
+  prompt_template: "a photo of a {}"
+description: Dense open-vocabulary CLIP map baseline. Convert class score maps to candidate masks and emit the best mask-label pair.

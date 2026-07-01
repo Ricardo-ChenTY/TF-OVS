@@ -1,0 +1,4 @@
+name: debug_empty
+status: runnable
+requires_gpu: false
+description: Writes empty masks for evaluator sanity checks only.

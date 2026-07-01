@@ -1,0 +1,6 @@
+name: clip_diy
+status: planned
+family: clip_dense_map
+strict_tf: true
+requires_gpu: true
+description: CLIP-DIY dense-inference baseline with fixed localization priors.

@@ -1,0 +1,6 @@
+name: groundingdino_sam2
+status: planned
+family: detector_sam
+strict_tf: true
+requires_gpu: true
+description: GroundingDINO class-conditioned boxes followed by SAM2 mask generation.

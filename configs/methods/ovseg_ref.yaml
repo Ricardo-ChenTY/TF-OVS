@@ -1,0 +1,10 @@
+# OVSeg — compact trained reference (not strict TF)
+# Liang et al., "Open-Vocabulary Semantic Segmentation with Mask-Adapted CLIP", CVPR 2023.
+name: ovseg_ref
+family: trained_reference
+strict_tf: false
+backbone: CLIP-L/14
+training_source: COCO-style (COCO Captions + image-level supervision)
+setup_hint: >
+  Needs official OVSeg weights from the project page and the mask-adapted CLIP
+  inference code.  See https://github.com/facebookresearch/ov-seg

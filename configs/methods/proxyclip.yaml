@@ -1,0 +1,12 @@
+name: proxyclip
+status: planned
+requires_gpu: true
+external_repo: external/ProxyCLIP
+weights:
+  clip: openai/clip-vit-base-patch16
+default_config:
+  device: cuda
+  mask_threshold: 0.5
+  min_component_area: 64
+  prompt_template: "a photo of a {}"
+description: Dense open-vocabulary ProxyCLIP baseline. Convert class score maps to candidate masks and emit the best mask-label pair.

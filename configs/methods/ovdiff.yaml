@@ -1,0 +1,6 @@
+name: ovdiff
+status: planned
+family: diffusion_reference
+strict_tf: true
+requires_gpu: true
+description: OVDiff diffusion-reference OVSS row, subject to runtime feasibility.

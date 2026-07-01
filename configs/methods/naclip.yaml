@@ -1,0 +1,6 @@
+name: naclip
+status: planned
+family: clip_dense_map
+strict_tf: true
+requires_gpu: true
+description: NACLIP neighbour-aware attention baseline with dense-map to mask conversion.

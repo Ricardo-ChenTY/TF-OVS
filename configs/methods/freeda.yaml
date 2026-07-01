@@ -1,0 +1,6 @@
+name: freeda
+status: planned
+family: diffusion_reference
+strict_tf: true
+requires_gpu: true
+description: FreeDA offline diffusion-augmented prototype baseline.

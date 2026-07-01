@@ -1,0 +1,6 @@
+name: dinov2_sam_siglip
+status: implemented
+family: proposal_naming
+strict_tf: true
+requires_gpu: true
+description: DINOv2-guided SAM proposals named with frozen SigLIP.

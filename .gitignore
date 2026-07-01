@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.cache/
+.claude/
+
+# Local environments
+.venv/
+.conda/
+env/
+venv/
+
+# Benchmark data and generated artifacts (too many files for git to track)
+data/
+runs/
+weights/
+external/
+third_party/
+
+# Large model/data files
+*.pth
+*.pt
+*.ckpt
+*.safetensors
+*.onnx
+*.zip
+*.tar
+*.tar.gz
+*.7z
+*.bak
+
+# OS/editor
+.git/
+.gitmeta/
+gitdir_test/
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

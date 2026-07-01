@@ -1,0 +1,6 @@
+name: sam_amg_siglip
+status: planned
+family: proposal_naming
+strict_tf: true
+requires_gpu: true
+description: SAM automatic masks named with frozen SigLIP over the fixed vocabulary.

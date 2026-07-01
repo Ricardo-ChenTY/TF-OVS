@@ -1,0 +1,24 @@
+data_root: data/raw
+manifest_root: data/manifests
+run_root: runs
+external_root: external
+weights_root: weights
+
+datasets:
+  ovcamo_te:
+    image_dir: data/raw/OVCamo/TE/images
+    mask_dir: data/raw/OVCamo/TE/masks
+    label_source: data/raw/OVCamo/sample_info.json
+    manifest: data/manifests/ovcamo_te.jsonl
+  camo_te:
+    image_dir: data/raw/CAMO/TE/images
+    mask_dir: data/raw/CAMO/TE/masks
+    manifest: data/manifests/camo_te.jsonl
+  cod10k_te_camo:
+    image_dir: data/raw/COD10K/TE-Camo/images
+    mask_dir: data/raw/COD10K/TE-Camo/masks
+    manifest: data/manifests/cod10k_te_camo.jsonl
+  nc4k:
+    image_dir: data/raw/NC4K/images
+    mask_dir: data/raw/NC4K/masks
+    manifest: data/manifests/nc4k.jsonl
