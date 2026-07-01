@@ -20,7 +20,7 @@ def _write_mask(path: Path, value: int) -> None:
 
 
 def main() -> None:
-    with tempfile.TemporaryDirectory(prefix="tf_ovs_smoke_") as tmp:
+    with tempfile.TemporaryDirectory(prefix="training_free_open_vocabulary_segmentation_smoke_") as tmp:
         root = Path(tmp)
         image_dir = root / "data" / "raw" / "toy" / "images"
         mask_dir = root / "data" / "raw" / "toy" / "masks"
@@ -68,7 +68,7 @@ def main() -> None:
 
         if result["num_samples"] != 3:
             raise RuntimeError(f"Unexpected smoke-test sample count: {result['num_samples']}")
-        print("TF-OVS smoke test passed.")
+        print("Training-Free Open-Vocabulary Segmentation smoke test passed.")
 
 
 if __name__ == "__main__":

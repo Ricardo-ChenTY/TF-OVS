@@ -1,6 +1,6 @@
-# TF-OVS
+# Training-Free Open-Vocabulary Segmentation
 
-Reproducibility code for the TF-OVS benchmark: a fixed-protocol evaluation
+Reproducibility code for the Training-Free Open-Vocabulary Segmentation benchmark: a fixed-protocol evaluation
 harness for training-free open-vocabulary segmentation.
 
 The repository intentionally contains only code and lightweight configuration
@@ -22,7 +22,7 @@ or machine-specific run artifacts.
 
 ```bash
 conda env create -f environment.yml
-conda activate tf-ovs
+conda activate training-free-open-vocabulary-segmentation
 python -m pip install -e .[dev,tables]
 ```
 

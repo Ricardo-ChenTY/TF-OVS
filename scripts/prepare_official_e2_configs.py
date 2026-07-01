@@ -99,13 +99,13 @@ def _patch_custom_datasets(repo: Path) -> None:
     if not path.exists():
         return
     text = path.read_text(encoding="utf-8")
-    marker = "# TF-OVS E2 dataset extensions"
+    marker = "# Training-Free Open-Vocabulary Segmentation E2 dataset extensions"
     if marker in text:
         return
 
     block = '''
 
-# TF-OVS E2 dataset extensions
+# Training-Free Open-Vocabulary Segmentation E2 dataset extensions
 import warnings
 
 import mmcv

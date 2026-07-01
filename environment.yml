@@ -1,4 +1,4 @@
-name: tf-ovs
+name: training-free-open-vocabulary-segmentation
 channels:
   - conda-forge
 dependencies:

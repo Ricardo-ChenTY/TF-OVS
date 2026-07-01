@@ -45,7 +45,7 @@ def copy_class_files() -> None:
 def patch_datasets() -> None:
     path = SC_CLIP / "custom_datasets.py"
     text = path.read_text(encoding="utf-8")
-    marker = "# TF-OVS E2 dataset extensions"
+    marker = "# Training-Free Open-Vocabulary Segmentation E2 dataset extensions"
     if marker in text:
         return
     extra = f'''

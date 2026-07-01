@@ -12,4 +12,4 @@ mkdir -p \
   runs \
   weights
 
-echo "Prepared TF-OVS workspace directories under ${repo_root}"
+echo "Prepared Training-Free Open-Vocabulary Segmentation workspace directories under ${repo_root}"
