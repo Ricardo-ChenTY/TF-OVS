@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import re
 from pathlib import Path
 from typing import Any
@@ -64,13 +65,35 @@ def build_raw_to_vocab_map(objects_path: Path, vocab_path: Path) -> dict[int, in
     return raw_to_vocab
 
 
+def read_official_id_map(path: Path, vocab_path: Path) -> dict[int, int]:
+    classes = json.loads(path.read_text())["classes"]
+    vocab = read_vocab(vocab_path)
+    if len(classes) != len(vocab):
+        raise ValueError("Official ID map and vocabulary sizes differ")
+    mapping = {}
+    for index, category in enumerate(classes):
+        if category["trainId"] != index or _normalize_label(category["name"]) != _normalize_label(vocab[index]):
+            raise ValueError(f"Official ID map disagrees with vocabulary at class {index}")
+        raw_id = int(category["id"])
+        if raw_id <= 0 or raw_id in mapping:
+            raise ValueError("Raw category IDs must be unique and positive")
+        mapping[raw_id] = index
+    return mapping
+
+
 def decode_ade_segmentation(seg_path: Path) -> np.ndarray:
     rgb = np.asarray(Image.open(seg_path).convert("RGB"))
     return (rgb[..., 0].astype(np.int32) // 10) * 256 + rgb[..., 1].astype(np.int32)
 
 
-def convert_label_map(raw_map: np.ndarray, raw_to_vocab: dict[int, int], void_label: int = VOID_LABEL) -> np.ndarray:
+def convert_label_map(raw_map: np.ndarray, raw_to_vocab: dict[int, int], void_label: int | None = None) -> np.ndarray:
     max_vocab_idx = max(raw_to_vocab.values()) if raw_to_vocab else 0
+    if void_label is None:
+        void_label = 65535 if max_vocab_idx >= 255 else VOID_LABEL
+    if void_label in raw_to_vocab.values():
+        raise ValueError(f"Void label {void_label} collides with a valid vocabulary class")
+    if min(raw_to_vocab.values(), default=0) < 0 or max(max_vocab_idx, void_label) > 65535 or void_label < 0:
+        raise ValueError("Class IDs and void label must fit unsigned 16-bit PNG storage")
     dtype = np.uint16 if (max_vocab_idx > 254 or void_label > 255) else np.uint8
     label_map = np.full(raw_map.shape, void_label, dtype=dtype)
     for raw_id in np.unique(raw_map):
@@ -93,6 +116,7 @@ def build_ade20k_manifest(
     out: Path,
     mask_dir: Path,
     limit: int | None = None,
+    class_id_map: Path | None = None,
 ) -> list[dict[str, Any]]:
     image_root = root / "images" / "ADE" / split
     objects_path = root / "objects.txt"
@@ -101,7 +125,12 @@ def build_ade20k_manifest(
     if not objects_path.exists():
         raise FileNotFoundError(f"Missing ADE objects file: {objects_path}")
 
-    raw_to_vocab = build_raw_to_vocab_map(objects_path, vocab)
+    if class_id_map is not None:
+        raw_to_vocab = read_official_id_map(class_id_map, vocab)
+    elif len(read_vocab(vocab)) > 255:
+        raise ValueError("Large ADE vocabulary requires an explicit official class_id_map; alias matching is ambiguous")
+    else:
+        raw_to_vocab = build_raw_to_vocab_map(objects_path, vocab)
     if not raw_to_vocab:
         raise ValueError(f"No ADE object names matched vocab labels: {vocab}")
 
@@ -155,6 +184,7 @@ def main() -> None:
     parser.add_argument("--vocab", required=True, type=Path)
     parser.add_argument("--out", required=True, type=Path)
     parser.add_argument("--mask-dir", required=True, type=Path, help="Output dir for converted label-map PNGs.")
+    parser.add_argument("--class-id-map", type=Path, help="Explicit official raw IDs and ordered class names; required for ADE847.")
     parser.add_argument("--limit", type=int, help="Only convert the first N images, useful for debugging.")
     args = parser.parse_args()
 
@@ -165,6 +195,7 @@ def main() -> None:
         out=args.out,
         mask_dir=args.mask_dir,
         limit=args.limit,
+        class_id_map=args.class_id_map,
     )
     write_jsonl(rows, args.out)
     print(f"Wrote {len(rows)} rows to {args.out}")

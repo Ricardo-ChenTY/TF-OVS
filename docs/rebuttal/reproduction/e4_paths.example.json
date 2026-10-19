@@ -1,0 +1,26 @@
+{
+  "repository": "/path/to/checkout",
+  "official_methods": "/path/to/legacy/third_party/official_methods",
+  "e4_cache": "/path/to/assets/.cache/e4",
+  "path_map": {
+    "/data/tianyi/TF-OVOS": "/path/to/checkout",
+    "/data/tianyi/TF-OVCOS": "/path/to/legacy",
+    "/data/sdd/tianyi/TF-OVOS-rebuttal": "/path/to/assets"
+  },
+  "extra_python_paths": [
+    "/path/to/assets/.cache/e4/deps"
+  ],
+  "environment": {
+    "TF_OVOS_SAM_CHECKPOINT": "/path/to/checkout/weights/sam_vit_h_4b8939.pth",
+    "TF_OVOS_CLIP_CACHE": "/path/to/checkout/.cache/clip",
+    "TF_OVOS_HF_CACHE": "/path/to/checkout/.cache/siglip",
+    "TF_OVOS_DINOV2_CACHE": "/path/to/checkout/.cache/dinov2",
+    "HF_HOME": "/path/to/assets/.cache/e4/huggingface",
+    "TORCH_HOME": "/path/to/assets/.cache/e4/torch",
+    "XDG_CACHE_HOME": "/path/to/assets/.cache/e4",
+    "TMPDIR": "/path/to/assets/tmp",
+    "MPLCONFIGDIR": "/path/to/assets/.cache/e4/matplotlib",
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1"
+  }
+}

@@ -1,0 +1,6 @@
+method,target,images,online_mean_seconds,ci95_low_seconds,ci95_high_seconds,cudnn_tf32,unchanged_full_quality_miou_percent,quality_scope
+sam_amg_clip,equal_target_mean,4000,3.2454217627177138,3.2235635377970557,3.2670913470313083,True,26.958357691269363,existing full native compact run; no substitution of sample mIoU
+sam_amg_siglip,equal_target_mean,4000,3.5137994499409744,3.4878362763510338,3.5398004055236685,True,30.12828347405761,existing full native compact run; no substitution of sample mIoU
+dinov2_sam_clip,equal_target_mean,4000,3.293663914517998,3.271196339411485,3.3159403689269364,True,25.22971663199268,existing full native compact run; no substitution of sample mIoU
+dinov2_sam_siglip,equal_target_mean,4000,3.5662176424867833,3.5395589535475125,3.592680433697132,True,28.42717273834786,existing full native compact run; no substitution of sample mIoU
+corrclip_online_sam2_8,equal_target_mean,4000,0.17695611762520094,0.17633923731150325,0.1775897175901382,False,48.35491454982702,existing full native compact run; no substitution of sample mIoU

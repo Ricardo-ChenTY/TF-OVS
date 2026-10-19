@@ -266,6 +266,7 @@ def prepare_ade20k847() -> None:
         vocab=vocab,
         out=manifest_path,
         mask_dir=out_dir,
+        class_id_map=ROOT / "configs" / "label_maps" / "ade20k847_official_ids.json",
     )
     write_jsonl(rows, manifest_path)
     print(f"  label maps → {out_dir.relative_to(ROOT)}")
@@ -296,10 +297,23 @@ for _i, _cid in enumerate(_COCO_STUFF_IDS):
     _COCO_ID_TO_VOCAB[_cid] = 80 + _i
 
 
+def coco_stuff_png_to_vocab(raw: np.ndarray) -> np.ndarray:
+    # Official PNG pixels are category_id - 1; 255 is void.
+    # https://github.com/nightrome/cocostuff#caffe-compatible-stuff-thing-maps
+    if raw.ndim != 2 or not np.issubdtype(raw.dtype, np.integer):
+        raise ValueError("COCO-Stuff requires a two-dimensional integer label map")
+    if np.any((raw < 0) | ((raw > 181) & (raw != 255))):
+        raise ValueError("Unexpected COCO-Stuff Caffe PNG IDs")
+    lut = np.full(256, 255, dtype=np.uint8)
+    for category_id, index in _COCO_ID_TO_VOCAB.items():
+        lut[category_id - 1] = index
+    return lut[raw]
+
+
 def prepare_coco_stuff171() -> None:
     """
     COCO-Stuff 171 validation set.
-    stuffthingmaps PNG: pixel = COCO category ID (1-182), 0 = unlabeled.
+    stuffthingmaps PNG: pixel = COCO category ID minus 1 (0-181), 255 = unlabeled.
     Remap via _COCO_ID_TO_VOCAB lookup table.
     """
     coco = RAW / "coco_stuff171"
@@ -315,13 +329,7 @@ def prepare_coco_stuff171() -> None:
             f"COCO-Stuff annotations not found at {ann_dir}. Run: bash scripts/dl_coco_stuff.sh"
         )
 
-    # Build numpy lookup table for fast vectorized remap (size 256)
-    lut = np.full(256, 255, dtype=np.uint8)
-    for coco_id, vocab_idx in _COCO_ID_TO_VOCAB.items():
-        if coco_id < 256:
-            lut[coco_id] = vocab_idx
-
-    out_dir = RAW / "coco_stuff171_labels"
+    out_dir = RAW / "coco_stuff171_labels_official"
     rows = []
     for ann_path in sorted(ann_dir.glob("*.png")):
         image_id = ann_path.stem  # e.g. "000000000139"
@@ -329,7 +337,7 @@ def prepare_coco_stuff171() -> None:
         if not img_path.exists():
             continue
         raw = np.array(Image.open(ann_path))
-        label = lut[raw]
+        label = coco_stuff_png_to_vocab(raw)
         dst = out_dir / f"{image_id}.png"
         _save_label_map(label, dst)
         rows.append({

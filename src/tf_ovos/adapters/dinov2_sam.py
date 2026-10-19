@@ -11,6 +11,7 @@ from PIL import Image
 from tf_ovos.adapters.sam_amg_clip import SamAmgClipAdapter
 from tf_ovos.adapters.sam_amg_siglip import SamAmgSiglipAdapter
 from tf_ovos.data import Prediction, Sample, as_output_path
+from tf_ovos.dino_geometry import aligned_mask_grid, mask_grid_source_indices
 
 _SAFE_CHARS = str.maketrans("/\\", "__")
 
@@ -31,6 +32,11 @@ class _Dinov2GuidanceMixin:
             "TF_OVOS_DINOV2_CACHE",
             str(Path(__file__).resolve().parents[3] / ".cache" / "huggingface"),
         )
+
+    def resolved_config(self) -> dict[str, object]:
+        result = super().resolved_config()
+        result["dinov2_mask_geometry"] = "RGB_processor_resize_center_crop_then_nearest_token_grid"
+        return result
 
     def _load_dinov2(self) -> None:
         from transformers import AutoImageProcessor, AutoModel
@@ -64,11 +70,14 @@ class _Dinov2GuidanceMixin:
         global_feat = tokens.reshape(-1, tokens.shape[-1]).mean(dim=0)
         global_feat = global_feat / global_feat.norm().clamp_min(1e-6)
 
+        source_indices = mask_grid_source_indices(
+            (image_rgb.height, image_rgb.width), self.dinov2_processor, (grid_w, grid_h)
+        )
         raw_scores: list[float] = []
         for mask in masks:
-            seg = Image.fromarray(mask["segmentation"].astype(np.uint8) * 255)
-            seg_small = seg.resize((grid_w, grid_h), Image.Resampling.NEAREST)
-            seg_np = np.asarray(seg_small) > 0
+            seg_np = aligned_mask_grid(
+                mask["segmentation"], self.dinov2_processor, (grid_w, grid_h), source_indices
+            )
             if not np.any(seg_np):
                 raw_scores.append(0.0)
                 continue
@@ -117,7 +126,9 @@ class _Dinov2GuidanceMixin:
         width, height = image_rgb.size
         image_np = np.asarray(image_rgb)
         masks = self.mask_generator.generate(image_np)
-        num_classes = self.num_classes or len(vocabulary)
+        num_classes = len(vocabulary)  # candidate axis, independent of evaluation GT
+        if not 0 < num_classes <= 65536:
+            raise ValueError("PNG predictions require 1..65536 candidates")
 
         if not masks:
             label_map = np.zeros((height, width), dtype=np.uint8 if num_classes <= 256 else np.uint16)
@@ -150,7 +161,6 @@ class _Dinov2GuidanceMixin:
                 label_map[update] = cls
                 confidence_map[update] = guided_conf
 
-            label_map = np.clip(label_map, 0, num_classes - 1)
             num_masks = len(masks_sorted)
 
         pred_dir = output_dir / "pred_masks"

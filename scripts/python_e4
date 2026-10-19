@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -euo pipefail
+task_e4_cache=/data/sdd/tianyi/TF-OVOS-rebuttal/.cache/e4
+export HF_HOME="$task_e4_cache/huggingface"
+export TORCH_HOME="$task_e4_cache/torch"
+export XDG_CACHE_HOME="$task_e4_cache"
+export TMPDIR=/data/sdd/tianyi/TF-OVOS-rebuttal/tmp
+export MPLCONFIGDIR="$task_e4_cache/matplotlib"
+export PYTHONDONTWRITEBYTECODE=1
+export PYTHONPATH=/data/sdd/tianyi/TF-OVOS-rebuttal/.cache/e4/deps:/data/tianyi/TF-OVOS/runs/rebuttal/execution_20261007/code
+export TF_OVOS_SAM_CHECKPOINT=/data/tianyi/TF-OVOS/weights/sam_vit_h_4b8939.pth
+export TF_OVOS_CLIP_CACHE=/data/tianyi/TF-OVOS/.cache/clip
+export TF_OVOS_HF_CACHE=/data/tianyi/TF-OVOS/.cache/siglip
+export TF_OVOS_DINOV2_CACHE=/data/tianyi/TF-OVOS/.cache/dinov2
+export OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 OPENBLAS_NUM_THREADS=4
+mkdir -p "$HF_HOME" "$TORCH_HOME" "$MPLCONFIGDIR"
+exec "${E4_PYTHON:-/data/tianyi/conda_envs/tf-ovos/bin/python}" "$@"

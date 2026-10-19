@@ -16,6 +16,22 @@ class MethodAdapter(ABC):
     def configure(self, **kwargs: object) -> None:
         """Receive optional runner context such as task or num_classes."""
 
+    def resolved_config(self) -> dict[str, object]:
+        """Export actual adapter settings, including environment overrides."""
+        names = ("task", "num_classes", "sam_checkpoint", "clip_model", "clip_pretrained",
+                 "siglip_model", "siglip_pretrained", "prompt_template", "device_name",
+                 "points_per_side", "pred_iou_thresh", "stability_score_thresh",
+                 "min_mask_region_area", "cache_dir", "dinov2_model_id", "dinov2_weight")
+        result = {name: getattr(self, name) for name in names if hasattr(self, name)}
+        result["adapter"] = type(self).__name__
+        for name in ("clip_preprocess", "siglip_preprocess", "dinov2_processor"):
+            if hasattr(self, name):
+                result[name] = repr(getattr(self, name))
+        if hasattr(self, "sam_checkpoint"):
+            result["sam_backbone"] = "vit_h"
+            result["uncovered_pixel_policy"] = "candidate_0_legacy_compositing"
+        return result
+
     @abstractmethod
     def predict_one(self, sample: Sample, vocabulary: list[str], output_dir: Path) -> Prediction:
         """Return exactly one prediction for one image.

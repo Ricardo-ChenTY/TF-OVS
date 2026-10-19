@@ -63,3 +63,41 @@ def test_build_ade20k_manifest_writes_relative_paths(tmp_path: Path) -> None:
     ]
     mask = np.asarray(Image.open(tmp_path / "data" / "processed" / "ade20k150" / "scene__ADE_val_00000001.png"))
     np.testing.assert_array_equal(mask, np.array([[0, 2], [255, 0]], dtype=np.uint8))
+
+
+def test_large_vocabulary_void_never_collides_with_class_255():
+    raw = np.array([[0, 10, 20, 30]], dtype=np.int32)
+    converted = convert_label_map(raw, {10: 255, 20: 846})
+    assert converted.dtype == np.uint16
+    assert converted.tolist() == [[65535, 255, 846, 65535]]
+
+
+def test_explicit_void_collision_rejected():
+    import pytest
+    with pytest.raises(ValueError, match="collides"):
+        convert_label_map(np.array([[1]]), {1: 255}, void_label=255)
+
+
+def test_official_id_mapping_preserves_distinct_alias_classes(tmp_path):
+    import json
+    from tf_ovos.make_ade20k_manifest import read_official_id_map
+    vocab = tmp_path / "vocab.txt"
+    vocab.write_text("screen, computer screen\nscreen, projection screen\n")
+    mapping = tmp_path / "mapping.json"
+    mapping.write_text(json.dumps({"classes": [
+        {"id": 50, "trainId": 0, "name": "screen, computer screen"},
+        {"id": 70, "trainId": 1, "name": "screen, projection screen"}]}))
+    assert read_official_id_map(mapping, vocab) == {50: 0, 70: 1}
+
+
+def test_official_id_mapping_rejects_wrong_vocabulary_order(tmp_path):
+    import json, pytest
+    from tf_ovos.make_ade20k_manifest import read_official_id_map
+    vocab = tmp_path / "vocab.txt"
+    vocab.write_text("sky\nwall\n")
+    mapping = tmp_path / "mapping.json"
+    mapping.write_text(json.dumps({"classes": [
+        {"id": 2978, "trainId": 0, "name": "wall"},
+        {"id": 2420, "trainId": 1, "name": "sky"}]}))
+    with pytest.raises(ValueError, match="disagrees"):
+        read_official_id_map(mapping, vocab)

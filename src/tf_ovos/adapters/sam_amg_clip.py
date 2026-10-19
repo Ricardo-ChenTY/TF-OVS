@@ -40,7 +40,7 @@ class SamAmgClipAdapter(MethodAdapter):
             "TF_OVOS_SAM_CHECKPOINT",
             str(Path(__file__).resolve().parents[3] / "weights" / "sam_vit_h_4b8939.pth"),
         )
-        self.clip_model = os.environ.get("TF_OVOS_SAM_CLIP_MODEL", "ViT-L-14")
+        self.clip_model = os.environ.get("TF_OVOS_SAM_CLIP_MODEL", "ViT-L-14-quickgelu")
         self.clip_pretrained = os.environ.get("TF_OVOS_SAM_CLIP_PRETRAINED", "openai")
         self.prompt_template = os.environ.get("TF_OVOS_SAM_CLIP_PROMPT", "a photo of a {}")
         self.device_name = os.environ.get("TF_OVOS_SAM_DEVICE", "cuda")
@@ -49,6 +49,7 @@ class SamAmgClipAdapter(MethodAdapter):
         self.pred_iou_thresh = float(os.environ.get("TF_OVOS_SAM_IOU_THR", "0.86"))
         self.stability_score_thresh = float(os.environ.get("TF_OVOS_SAM_STAB_THR", "0.92"))
         self.min_mask_region_area = int(os.environ.get("TF_OVOS_SAM_MIN_AREA", "400"))
+        self.cache_dir = os.environ.get("TF_OVOS_CLIP_CACHE", str(Path(__file__).resolve().parents[3] / ".cache" / "clip"))
         self._loaded = False
 
     def configure(self, **kwargs: object) -> None:
@@ -102,8 +103,8 @@ class SamAmgClipAdapter(MethodAdapter):
         )
 
         # CLIP
-        self.clip_model_obj, self.clip_preprocess, _ = open_clip.create_model_and_transforms(
-            self.clip_model, pretrained=self.clip_pretrained
+        self.clip_model_obj, _, self.clip_preprocess = open_clip.create_model_and_transforms(
+            self.clip_model, pretrained=self.clip_pretrained, cache_dir=self.cache_dir
         )
         self.clip_model_obj.eval().to(self.device)
         self.tokenizer = open_clip.get_tokenizer(self.clip_model)
@@ -151,7 +152,9 @@ class SamAmgClipAdapter(MethodAdapter):
         # masks: list of dicts with keys: segmentation (H×W bool), bbox ([x,y,w,h]),
         #        predicted_iou, stability_score, area
 
-        num_classes = self.num_classes or len(vocabulary)
+        num_classes = len(vocabulary)  # candidate axis, independent of evaluation GT
+        if not 0 < num_classes <= 65536:
+            raise ValueError("PNG predictions require 1..65536 candidates")
 
         if not masks:
             # fallback: entire image as one region
@@ -188,7 +191,6 @@ class SamAmgClipAdapter(MethodAdapter):
                 label_map[update] = cls
                 confidence_map[update] = conf
 
-            label_map = np.clip(label_map, 0, num_classes - 1)
 
         pred_dir = output_dir / "pred_masks"
         pred_dir.mkdir(parents=True, exist_ok=True)

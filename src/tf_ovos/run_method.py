@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import time
 from pathlib import Path
@@ -48,6 +49,11 @@ def run_method(
         "num_samples": len(samples),
         "task": task,
         "num_classes": num_classes,
+        "num_candidates": len(vocabulary),
+        "resolved_configuration": adapter.resolved_config(),
+        "manifest_sha256": hashlib.sha256(manifest.read_bytes()).hexdigest(),
+        "vocab_sha256": hashlib.sha256(vocab.read_bytes()).hexdigest() if vocab else None,
+        "timing_scope": "predict_many_including_setup_and_internal_mask_export",
         "wall_time_sec": elapsed,
         "sec_per_image": elapsed / max(len(samples), 1),
         "model_calls": None,

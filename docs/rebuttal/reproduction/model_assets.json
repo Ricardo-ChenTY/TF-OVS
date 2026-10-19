@@ -1,0 +1,130 @@
+{
+  "scope": "Original frozen source-manifest asset hashes; model cache snapshots, references and blobs may duplicate the same bytes.",
+  "assets": [
+    {
+      "group": "proposal",
+      "asset": "weights/sam_vit_h_4b8939.pth",
+      "sha256": "a7bf3b02f3ebf1267aba913ff637d9a2d5c33d3173bb679e46d9f338c26f262e"
+    },
+    {
+      "group": "proposal",
+      "asset": "cache/clip/models--timm--vit_large_patch14_clip_224.openai/snapshots/18d0535469bb561bf468d76c1d73aa35156c922b/open_clip_model.safetensors",
+      "sha256": "9ce2e8a8ebfff3793d7d375ad6d3c35cb9aebf3de7ace0fc7308accab7cd207e"
+    },
+    {
+      "group": "proposal",
+      "asset": "cache/clip/models--timm--vit_large_patch14_clip_224.openai/refs/main",
+      "sha256": "2e82190c9d9c39cee15c3062bccf99cf72bc1e3cc4524a52433a8dbbb2fdb9d7"
+    },
+    {
+      "group": "proposal",
+      "asset": "cache/clip/models--timm--vit_large_patch14_clip_224.openai/blobs/9ce2e8a8ebfff3793d7d375ad6d3c35cb9aebf3de7ace0fc7308accab7cd207e",
+      "sha256": "9ce2e8a8ebfff3793d7d375ad6d3c35cb9aebf3de7ace0fc7308accab7cd207e"
+    },
+    {
+      "group": "proposal",
+      "asset": "cache/siglip/models--timm--ViT-SO400M-14-SigLIP/snapshots/9179d15177ece40964c50492136eda2f3e0c9f61/open_clip_config.json",
+      "sha256": "22bcd183606a8cd41e4d892f30bd59aae49b8e4c83b9d734c749342633084af5"
+    },
+    {
+      "group": "proposal",
+      "asset": "cache/siglip/models--timm--ViT-SO400M-14-SigLIP/snapshots/9179d15177ece40964c50492136eda2f3e0c9f61/special_tokens_map.json",
+      "sha256": "3a60d3bb0808e7e629845031c2d720d33c2aceee1a6c535255de15d45b9f1ac7"
+    },
+    {
+      "group": "proposal",
+      "asset": "cache/siglip/models--timm--ViT-SO400M-14-SigLIP/snapshots/9179d15177ece40964c50492136eda2f3e0c9f61/open_clip_model.safetensors",
+      "sha256": "0a04a48b797e187a568335ab67e57a8958c32cee5a707a3feb6d4c97149dcd9c"
+    },
+    {
+      "group": "proposal",
+      "asset": "cache/siglip/models--timm--ViT-SO400M-14-SigLIP/snapshots/9179d15177ece40964c50492136eda2f3e0c9f61/tokenizer.json",
+      "sha256": "83051c8005acc696637fe0c62c711ecee4b59083b4cf07ff9ad5f637eb2a3d2a"
+    },
+    {
+      "group": "proposal",
+      "asset": "cache/siglip/models--timm--ViT-SO400M-14-SigLIP/snapshots/9179d15177ece40964c50492136eda2f3e0c9f61/tokenizer_config.json",
+      "sha256": "8571e0cf70f7ae095c5c544ab94b7967e94c79262202d61604da10cbe426cecb"
+    },
+    {
+      "group": "proposal",
+      "asset": "cache/siglip/models--timm--ViT-SO400M-14-SigLIP/refs/main",
+      "sha256": "b5b507943edf472909f5b62cb96a1f36410f0ad8434633491c48517344d64815"
+    },
+    {
+      "group": "proposal",
+      "asset": "cache/siglip/models--timm--ViT-SO400M-14-SigLIP/blobs/06da9e637f9d1a09573910bbcc0f64394f4a89a0",
+      "sha256": "83051c8005acc696637fe0c62c711ecee4b59083b4cf07ff9ad5f637eb2a3d2a"
+    },
+    {
+      "group": "proposal",
+      "asset": "cache/siglip/models--timm--ViT-SO400M-14-SigLIP/blobs/cc26c82999019b181968187db28e9fbca53a5e52",
+      "sha256": "3a60d3bb0808e7e629845031c2d720d33c2aceee1a6c535255de15d45b9f1ac7"
+    },
+    {
+      "group": "proposal",
+      "asset": "cache/siglip/models--timm--ViT-SO400M-14-SigLIP/blobs/0a04a48b797e187a568335ab67e57a8958c32cee5a707a3feb6d4c97149dcd9c",
+      "sha256": "0a04a48b797e187a568335ab67e57a8958c32cee5a707a3feb6d4c97149dcd9c"
+    },
+    {
+      "group": "proposal",
+      "asset": "cache/siglip/models--timm--ViT-SO400M-14-SigLIP/blobs/ed24b6426d2a710bedd0ba400fb180d9f50bab3b",
+      "sha256": "8571e0cf70f7ae095c5c544ab94b7967e94c79262202d61604da10cbe426cecb"
+    },
+    {
+      "group": "proposal",
+      "asset": "cache/siglip/models--timm--ViT-SO400M-14-SigLIP/blobs/8b5f716be9af46c7a49cb6a4d8eab7ce54b9aac2",
+      "sha256": "22bcd183606a8cd41e4d892f30bd59aae49b8e4c83b9d734c749342633084af5"
+    },
+    {
+      "group": "proposal",
+      "asset": "cache/dinov2/models--facebook--dinov2-base/snapshots/f9e44c814b77203eaa57a6bdbbd535f21ede1415/config.json",
+      "sha256": "f7ff4cfa73d2f70647dbf6950541ad25d73082d54c2e7e9bded160c7656b2a70"
+    },
+    {
+      "group": "proposal",
+      "asset": "cache/dinov2/models--facebook--dinov2-base/snapshots/f9e44c814b77203eaa57a6bdbbd535f21ede1415/preprocessor_config.json",
+      "sha256": "14e780d86fa1861f8751f868d7f45425b5feb55c38ca26f152ca5097ab30f828"
+    },
+    {
+      "group": "proposal",
+      "asset": "cache/dinov2/models--facebook--dinov2-base/snapshots/f9e44c814b77203eaa57a6bdbbd535f21ede1415/model.safetensors",
+      "sha256": "d73036b56966966d07975d696bde331762f37297e2f095de8cea0040c3aa0841"
+    },
+    {
+      "group": "proposal",
+      "asset": "cache/dinov2/models--facebook--dinov2-base/refs/main",
+      "sha256": "572e908c095e1ff86a74295621b9c02258cdc950959f29b1568f3305223062cc"
+    },
+    {
+      "group": "proposal",
+      "asset": "cache/dinov2/models--facebook--dinov2-base/blobs/d73036b56966966d07975d696bde331762f37297e2f095de8cea0040c3aa0841",
+      "sha256": "d73036b56966966d07975d696bde331762f37297e2f095de8cea0040c3aa0841"
+    },
+    {
+      "group": "proposal",
+      "asset": "cache/dinov2/models--facebook--dinov2-base/blobs/ff5b47c2edcd1d3556d63c01a65d93b58b9efce1",
+      "sha256": "14e780d86fa1861f8751f868d7f45425b5feb55c38ca26f152ca5097ab30f828"
+    },
+    {
+      "group": "proposal",
+      "asset": "cache/dinov2/models--facebook--dinov2-base/blobs/5df0129f878aa42d71fa74d27a50f382d13ed71e",
+      "sha256": "f7ff4cfa73d2f70647dbf6950541ad25d73082d54c2e7e9bded160c7656b2a70"
+    },
+    {
+      "group": "corrclip",
+      "asset": "cache/e4/weights/sam2_hiera_large.pt",
+      "sha256": "7442e4e9b732a508f80e141e7c2913437a3610ee0c77381a66658c3a445df87b"
+    },
+    {
+      "group": "corrclip",
+      "asset": "cache/e4/clip/b16_fullcc2.5b.pt",
+      "sha256": "512ea0fb9f2cf88d027e96e4674247a1a91a96af18abc2e2fcdb8008c551e04b"
+    },
+    {
+      "group": "corrclip",
+      "asset": "cache/e4/torch/hub/checkpoints/dino_vitbase8_pretrain.pth",
+      "sha256": "575f0efc4838938314afa09897a62ed2b87919928b5edcd133abb907328995eb"
+    }
+  ]
+}

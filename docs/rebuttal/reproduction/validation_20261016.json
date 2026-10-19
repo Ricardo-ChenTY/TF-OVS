@@ -1,0 +1,87 @@
+{
+  "status": "passed",
+  "scope": "Same-server relocation smoke using existing model environment and licensed data/assets. Not a fresh-machine environment installation or full-target replay.",
+  "frozen_inputs_checked_per_protocol": 4020,
+  "native_corrclip_source_files_reconstructed": 205,
+  "smokes": [
+    {
+      "method": "sam_amg_clip",
+      "dataset": "voc20",
+      "warmup_images": 5,
+      "measured_images": 1,
+      "image_id": "2008_002536",
+      "raw_prediction_sha256": "4a319cf6d1817d54c390eba3524e7b4aa5909fa0ff1c5e84a8850e3f493920cb",
+      "matches_published_prediction": true,
+      "gpu": "NVIDIA A100 80GB PCIe",
+      "torch_version": "2.12.0+cu130",
+      "python_version": "3.11.15",
+      "native_source_restored_from_upstream_and_patch": false
+    },
+    {
+      "method": "sam_amg_siglip",
+      "dataset": "voc20",
+      "warmup_images": 5,
+      "measured_images": 1,
+      "image_id": "2008_002536",
+      "raw_prediction_sha256": "f71a89756cadbfa22c9199f55a1797fd3aa6cdac1f027a85fa93955f6b6f63a1",
+      "matches_published_prediction": true,
+      "gpu": "NVIDIA A100 80GB PCIe",
+      "torch_version": "2.12.0+cu130",
+      "python_version": "3.11.15",
+      "native_source_restored_from_upstream_and_patch": false
+    },
+    {
+      "method": "dinov2_sam_clip",
+      "dataset": "voc20",
+      "warmup_images": 5,
+      "measured_images": 1,
+      "image_id": "2008_002536",
+      "raw_prediction_sha256": "2797944dc95512fc4e55e2fcefcd51d23481ab285b51d11a37d98bf225361055",
+      "matches_published_prediction": true,
+      "gpu": "NVIDIA A100 80GB PCIe",
+      "torch_version": "2.12.0+cu130",
+      "python_version": "3.11.15",
+      "native_source_restored_from_upstream_and_patch": false
+    },
+    {
+      "method": "dinov2_sam_siglip",
+      "dataset": "voc20",
+      "warmup_images": 5,
+      "measured_images": 1,
+      "image_id": "2008_002536",
+      "raw_prediction_sha256": "076b3c88512ce7d842724c0a607c8d92fe25e97666e73e5a2589606e071c0b09",
+      "matches_published_prediction": true,
+      "gpu": "NVIDIA A100 80GB PCIe",
+      "torch_version": "2.12.0+cu130",
+      "python_version": "3.11.15",
+      "native_source_restored_from_upstream_and_patch": false
+    },
+    {
+      "method": "corrclip_online",
+      "dataset": "voc20",
+      "warmup_images": 5,
+      "measured_images": 1,
+      "image_id": "2008_002536",
+      "raw_prediction_sha256": "ffca38f10587024037c45bcd75745fa88253d056a1faeda78a7bafaeb6fb0fe6",
+      "matches_published_prediction": true,
+      "gpu": "NVIDIA A100 80GB PCIe",
+      "torch_version": "2.12.0+cu130",
+      "python_version": "3.11.15",
+      "native_source_restored_from_upstream_and_patch": true
+    }
+  ],
+  "unit_tests_passed": 11,
+  "statistics": {
+    "status": "passed",
+    "timing_records": 20000,
+    "latency_rows": 25,
+    "paired_rows": 10,
+    "cliptrase_score_rows": 4,
+    "tolerance": 1e-12,
+    "scope": "CPU reaggregation of published measurements and confusion matrices; not fresh inference or independent validation of their collection."
+  },
+  "entrypoint_sha256": {
+    "scripts/reproduce_e4.py": "5eb436ae39cd34b82340c4fdc143f23fd44c1ab0461939f717a99314e242a172",
+    "scripts/reproduce_published_statistics.py": "3a56c21587a6fcb4d7e33db393c5f99ef4675aedab58eb9a46323de8f585bf4c"
+  }
+}

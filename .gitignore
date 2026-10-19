@@ -40,3 +40,7 @@ gitdir_test/
 Thumbs.db
 .vscode/
 .idea/
+
+# Small frozen reproduction inputs (no model weights or prediction PNGs).
+!docs/rebuttal/artifacts/*.tar.gz
+!docs/rebuttal/reproduction/dino_hub_source.tar.gz

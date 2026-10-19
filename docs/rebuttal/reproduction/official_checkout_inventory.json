@@ -1,0 +1,166 @@
+{
+  "scope": "Observed checkout inventory, not proof that older patch directories restore every current run. Only corrclip_runtime has a newly verified reconstruction.",
+  "repositories": [
+    {
+      "method_repository": "CASS",
+      "commit": "228ecdd8273e269d1b955f5ad7f9558346036e22",
+      "local_changes": true,
+      "patch_directory": "third_party_patches/CASS",
+      "patch_directory_exists": true
+    },
+    {
+      "method_repository": "CLIPtrase",
+      "commit": "2b7de612e5745ccaf9f7c57ee5ba83d526062f0c",
+      "local_changes": true,
+      "patch_directory": "third_party_patches/CLIPtrase",
+      "patch_directory_exists": true
+    },
+    {
+      "method_repository": "CorrCLIP",
+      "commit": "6c1fd2c02ff90f071ed744a5998be0cda7ad75b4",
+      "local_changes": true,
+      "patch_directory": "third_party_patches/CorrCLIP",
+      "patch_directory_exists": true
+    },
+    {
+      "method_repository": "DiffSegmenter",
+      "commit": "6723b4776e3b83ac315576ca7ae50db096f77e6d",
+      "local_changes": true,
+      "patch_directory": "third_party_patches/DiffSegmenter",
+      "patch_directory_exists": true
+    },
+    {
+      "method_repository": "FLOSS",
+      "commit": "ccf1d49dba37d0e35316dc50be57d133745a168a",
+      "local_changes": false,
+      "patch_directory": "third_party_patches/FLOSS",
+      "patch_directory_exists": false
+    },
+    {
+      "method_repository": "FreeSegDiff-release",
+      "commit": "00a2ccf952c0b40a56664754855d86204b2c0e60",
+      "local_changes": false,
+      "patch_directory": "third_party_patches/FreeSegDiff-release",
+      "patch_directory_exists": false
+    },
+    {
+      "method_repository": "GroundingDINO",
+      "commit": "856dde20aee659246248e20734ef9ba5214f5e44",
+      "local_changes": false,
+      "patch_directory": "third_party_patches/GroundingDINO",
+      "patch_directory_exists": false
+    },
+    {
+      "method_repository": "LPOSS",
+      "commit": "e489a7445528922ddfe4e39631ef2fe34827c873",
+      "local_changes": false,
+      "patch_directory": "third_party_patches/LPOSS",
+      "patch_directory_exists": false
+    },
+    {
+      "method_repository": "MaskDiffusion",
+      "commit": "1955c8741ca609fc1a49b0c593e39dbd896a3aac",
+      "local_changes": false,
+      "patch_directory": "third_party_patches/MaskDiffusion",
+      "patch_directory_exists": false
+    },
+    {
+      "method_repository": "NACLIP",
+      "commit": "0cac3a651f753b11315ea799cfbfabf79da1bd76",
+      "local_changes": true,
+      "patch_directory": "third_party_patches/NACLIP",
+      "patch_directory_exists": true
+    },
+    {
+      "method_repository": "ODISE",
+      "commit": "2b187e4b2ff4c3d5da342aec2cc234b537720a65",
+      "local_changes": true,
+      "patch_directory": "third_party_patches/ODISE",
+      "patch_directory_exists": true
+    },
+    {
+      "method_repository": "ProxyCLIP",
+      "commit": "a0e38d1989c990651fda0d8fbf8aad41bde955b5",
+      "local_changes": true,
+      "patch_directory": "third_party_patches/ProxyCLIP",
+      "patch_directory_exists": true
+    },
+    {
+      "method_repository": "ReME",
+      "commit": "8cd0263eceae5f4e57248aa67a96d52ed0d81a2e",
+      "local_changes": false,
+      "patch_directory": "third_party_patches/ReME",
+      "patch_directory_exists": false
+    },
+    {
+      "method_repository": "ResCLIP",
+      "commit": "0e085f7f52f06098b383599e9653cd28cc665a8c",
+      "local_changes": true,
+      "patch_directory": "third_party_patches/ResCLIP",
+      "patch_directory_exists": true
+    },
+    {
+      "method_repository": "SAN",
+      "commit": "e19262d1a23992fc2cef934d6756b89ff50fe5c3",
+      "local_changes": false,
+      "patch_directory": "third_party_patches/SAN",
+      "patch_directory_exists": false
+    },
+    {
+      "method_repository": "SC-CLIP",
+      "commit": "7d6b6d5ba57afe4bcad5fde88ed98d86a1ffc961",
+      "local_changes": true,
+      "patch_directory": "third_party_patches/SC-CLIP",
+      "patch_directory_exists": true
+    },
+    {
+      "method_repository": "SCLIP",
+      "commit": "b56bd3014b9e8a3ee3450bcfc53700a67d627b7a",
+      "local_changes": true,
+      "patch_directory": "third_party_patches/SCLIP",
+      "patch_directory_exists": true
+    },
+    {
+      "method_repository": "Trident",
+      "commit": "7feea10222bf15d5aabdeabefde5902a62584d94",
+      "local_changes": true,
+      "patch_directory": "third_party_patches/Trident",
+      "patch_directory_exists": true
+    },
+    {
+      "method_repository": "clip-diy",
+      "commit": "f88932d9e001597f407ada7b02bad99a80ccbe92",
+      "local_changes": false,
+      "patch_directory": "third_party_patches/clip-diy",
+      "patch_directory_exists": false
+    },
+    {
+      "method_repository": "freeda",
+      "commit": "5ba8c510bee01e8d3f00849d56d0cc9b9f62332f",
+      "local_changes": true,
+      "patch_directory": "third_party_patches/freeda",
+      "patch_directory_exists": true
+    },
+    {
+      "method_repository": "maskclip",
+      "commit": "245d31f809be9c1938f8f30561b6bf9ed033d746",
+      "local_changes": true,
+      "patch_directory": "third_party_patches/maskclip",
+      "patch_directory_exists": true
+    },
+    {
+      "method_repository": "ov-seg",
+      "commit": "36f49d496714998058d115ffb6172d9d84c59065",
+      "local_changes": true,
+      "patch_directory": "third_party_patches/ov-seg",
+      "patch_directory_exists": true
+    },
+    {
+      "method_repository": "ovdiff",
+      "commit": "218566b1aa045df3ea026c5a47d8c43dc90cbb06",
+      "local_changes": true,
+      "patch_directory": "third_party_patches/ovdiff",
+      "patch_directory_exists": true
+    }
+  ]
+}

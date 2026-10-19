@@ -162,7 +162,7 @@ test_dataloader = dict(
 
 
 _RESCLIP_EXTRA: dict[str, dict] = {
-    "tfovos_voc20":          {"temp_thd": 0.10, "delete_same_entity": True, "attn_rcs_weights": [2.0, 0.6], "attn_sfr_weights": [2.1, 0.6]},
+    "tfovos_voc20":          {"slide_crop": 0, "temp_thd": 0.10, "delete_same_entity": True, "attn_rcs_weights": [2.0, 0.6], "attn_sfr_weights": [2.1, 0.6]},
     "tfovos_context59":      {"temp_thd": 0.25, "delete_same_entity": True, "attn_rcs_weights": [2.0, 0.4], "attn_sfr_weights": [1.8, 0.7]},
     "tfovos_ade20k":         {"temp_thd": 0.25, "delete_same_entity": True, "attn_rcs_weights": [2.0, 0.3], "attn_sfr_weights": [2.1, 0.7]},
     "tfovos_coco_stuff164k": {"temp_thd": 0.11, "delete_same_entity": True, "attn_rcs_weights": [2.0, 0.4], "attn_sfr_weights": [1.8, 0.7]},

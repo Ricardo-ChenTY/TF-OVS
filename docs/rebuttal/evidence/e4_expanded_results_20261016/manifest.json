@@ -1,0 +1,10 @@
+{
+  "files": {
+    "verification.json": "e386712d1c74bfb53215515f6939e966359b463a94b11c7f1becb91b354c43b7",
+    "paired_dino_overhead_ci.csv": "e1ff9f75c84572f1022db2da98e5171ebe0e643a676f481b90b6a268137ffb59",
+    "latency_ci_five_configurations.csv": "02ceb6f15e047fa38ee534d1f5bb23b8cd7c6f67b31ac0a4a67c29de0176cb46",
+    "quality_latency_pairs.csv": "768777a07862787f3af46192cd7e21525e3c12ed58037d17db93e38fa201efe7"
+  },
+  "archive": "docs/rebuttal/artifacts/e4_expanded_results_20261016.tar.gz",
+  "archive_sha256": "db4e707ea181cf3274237ad9b868c2f32ceef316ffb2d23837f61589f30737ff"
+}

@@ -1,0 +1,184 @@
+{
+  "status": "complete",
+  "completed_jobs": 20,
+  "timed_predictions": 20000,
+  "exact_prediction_matches": 20000,
+  "images_per_target_per_config": 1000,
+  "completed_utc": "2026-10-16T10:22:43Z",
+  "jobs": [
+    {
+      "method": "sam_amg_clip",
+      "dataset": "voc20",
+      "images": 1000,
+      "exact_matches": 1000,
+      "online_mean_seconds": 3.0574864860799935,
+      "finished_utc": "2026-10-15T19:32:35Z"
+    },
+    {
+      "method": "sam_amg_clip",
+      "dataset": "context59",
+      "images": 1000,
+      "exact_matches": 1000,
+      "online_mean_seconds": 3.088510314950985,
+      "finished_utc": "2026-10-15T23:11:51Z"
+    },
+    {
+      "method": "sam_amg_clip",
+      "dataset": "ade150",
+      "images": 1000,
+      "exact_matches": 1000,
+      "online_mean_seconds": 3.4075392721079987,
+      "finished_utc": "2026-10-16T02:56:45Z"
+    },
+    {
+      "method": "sam_amg_clip",
+      "dataset": "coco_stuff171",
+      "images": 1000,
+      "exact_matches": 1000,
+      "online_mean_seconds": 3.4281509777318786,
+      "finished_utc": "2026-10-16T07:00:34Z"
+    },
+    {
+      "method": "sam_amg_siglip",
+      "dataset": "voc20",
+      "images": 1000,
+      "exact_matches": 1000,
+      "online_mean_seconds": 3.3258198117640108,
+      "finished_utc": "2026-10-15T21:21:55Z"
+    },
+    {
+      "method": "sam_amg_siglip",
+      "dataset": "context59",
+      "images": 1000,
+      "exact_matches": 1000,
+      "online_mean_seconds": 3.331018062983985,
+      "finished_utc": "2026-10-16T01:01:35Z"
+    },
+    {
+      "method": "sam_amg_siglip",
+      "dataset": "ade150",
+      "images": 1000,
+      "exact_matches": 1000,
+      "online_mean_seconds": 3.6823203608138138,
+      "finished_utc": "2026-10-16T04:58:34Z"
+    },
+    {
+      "method": "sam_amg_siglip",
+      "dataset": "coco_stuff171",
+      "images": 1000,
+      "exact_matches": 1000,
+      "online_mean_seconds": 3.7160395642020885,
+      "finished_utc": "2026-10-16T09:02:58Z"
+    },
+    {
+      "method": "dinov2_sam_clip",
+      "dataset": "voc20",
+      "images": 1000,
+      "exact_matches": 1000,
+      "online_mean_seconds": 3.1082039200229783,
+      "finished_utc": "2026-10-15T20:25:18Z"
+    },
+    {
+      "method": "dinov2_sam_clip",
+      "dataset": "context59",
+      "images": 1000,
+      "exact_matches": 1000,
+      "online_mean_seconds": 3.1190933305069484,
+      "finished_utc": "2026-10-16T00:04:54Z"
+    },
+    {
+      "method": "dinov2_sam_clip",
+      "dataset": "ade150",
+      "images": 1000,
+      "exact_matches": 1000,
+      "online_mean_seconds": 3.4802563717899466,
+      "finished_utc": "2026-10-16T03:55:51Z"
+    },
+    {
+      "method": "dinov2_sam_clip",
+      "dataset": "coco_stuff171",
+      "images": 1000,
+      "exact_matches": 1000,
+      "online_mean_seconds": 3.467102035752119,
+      "finished_utc": "2026-10-16T07:59:36Z"
+    },
+    {
+      "method": "dinov2_sam_siglip",
+      "dataset": "voc20",
+      "images": 1000,
+      "exact_matches": 1000,
+      "online_mean_seconds": 3.3788574688689703,
+      "finished_utc": "2026-10-15T22:19:21Z"
+    },
+    {
+      "method": "dinov2_sam_siglip",
+      "dataset": "context59",
+      "images": 1000,
+      "exact_matches": 1000,
+      "online_mean_seconds": 3.365277641663066,
+      "finished_utc": "2026-10-16T01:58:52Z"
+    },
+    {
+      "method": "dinov2_sam_siglip",
+      "dataset": "ade150",
+      "images": 1000,
+      "exact_matches": 1000,
+      "online_mean_seconds": 3.7403439377410397,
+      "finished_utc": "2026-10-16T06:02:13Z"
+    },
+    {
+      "method": "dinov2_sam_siglip",
+      "dataset": "coco_stuff171",
+      "images": 1000,
+      "exact_matches": 1000,
+      "online_mean_seconds": 3.780391521674057,
+      "finished_utc": "2026-10-16T10:07:16Z"
+    },
+    {
+      "method": "corrclip_online",
+      "dataset": "voc20",
+      "images": 1000,
+      "exact_matches": 1000,
+      "online_mean_seconds": 0.17413916269990296,
+      "finished_utc": "2026-10-16T10:11:30Z"
+    },
+    {
+      "method": "corrclip_online",
+      "dataset": "context59",
+      "images": 1000,
+      "exact_matches": 1000,
+      "online_mean_seconds": 0.1727935362700591,
+      "finished_utc": "2026-10-16T10:15:02Z"
+    },
+    {
+      "method": "corrclip_online",
+      "dataset": "ade150",
+      "images": 1000,
+      "exact_matches": 1000,
+      "online_mean_seconds": 0.17426349917279002,
+      "finished_utc": "2026-10-16T10:18:38Z"
+    },
+    {
+      "method": "corrclip_online",
+      "dataset": "coco_stuff171",
+      "images": 1000,
+      "exact_matches": 1000,
+      "online_mean_seconds": 0.18662827235805163,
+      "finished_utc": "2026-10-16T10:22:36Z"
+    }
+  ],
+  "checks": [
+    "Same image IDs/order across five configurations",
+    "All completed prediction-pairing records have zero changed pixels",
+    "Recomputed dataset and equal-target time means from per-image records",
+    "Statistical source hashes match frozen verification files",
+    "Full-quality scores retained unchanged"
+  ],
+  "limits": [
+    "Five configurations only, not all benchmark methods",
+    "Expanded sample, not full validation sets",
+    "Image-bootstrap intervals conditional on measured sessions",
+    "cuDNN TF32 on for four proposals and off for online CorrCLIP; matmul TF32 off for all",
+    "File I/O and initialization excluded from online timing"
+  ]
+}

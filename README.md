@@ -3,10 +3,28 @@
 Reproducibility code for the Training-Free Open-Vocabulary Segmentation benchmark: a fixed-protocol evaluation
 harness for training-free open-vocabulary segmentation.
 
-The repository intentionally contains only code and lightweight configuration
-needed to reproduce the benchmark pipeline. It does not include raw datasets,
-model checkpoints, generated prediction maps, paper drafts, rendered figures,
-or machine-specific run artifacts.
+The repository contains the evaluation code, configurations, and a small frozen
+evidence package for replaying the revised statistics. Datasets, model weights,
+and full prediction maps are supplied separately.
+
+## Reproduce the revised results
+
+Start with the [reproduction guide](docs/reproduction/README.md). It covers the
+corrected semantic metrics, fixed-GT candidate expansion, and the five matched
+E4 configurations. The CPU replay recomputes the published timing intervals and
+CLIPtrase scores without model weights or datasets.
+
+```bash
+python -m pip install -e .[dev,tables]
+python -m pytest tests
+python scripts/smoke_test.py
+python scripts/verify_expanded_e4_code.py
+python scripts/reproduce_published_statistics.py --out runs/replayed-statistics
+```
+
+Use a new output directory for each statistics replay. GPU inference requires
+the recorded external models, licensed validation data, and compatible software
+listed in the guide.
 
 ## Contents
 
@@ -17,6 +35,8 @@ or machine-specific run artifacts.
 - `scripts/`: dataset preparation, official-config preparation, prediction
   post-processing, diagnostic-table generation, and analysis scripts.
 - `tests/`: unit and smoke tests for the reproducible harness.
+- `docs/reproduction/`: reproduction instructions and import provenance.
+- `docs/rebuttal/`: the frozen E4 protocols, measurement records, and model inventories used by the replay.
 
 ## Setup
 
@@ -144,6 +164,9 @@ python scripts/build_e2_filled_table.py
 
 Generated outputs are written to ignored `runs/analysis/` paths.
 
+The DINO geometry tests run when the optional `transformers` dependency is
+installed. The recorded experiment used `transformers==4.36.2`.
+
 ## Repository Hygiene
 
 The following are intentionally ignored and should not be committed:
@@ -151,6 +174,6 @@ The following are intentionally ignored and should not be committed:
 - raw datasets and manifests under `data/`
 - model checkpoints and weights
 - third-party method repositories
-- generated predictions, logs, tables, and figures under `runs/`
+- newly generated predictions, logs, tables, and figures under `runs/`
 - paper drafts and local presentation/figure editing artifacts
 

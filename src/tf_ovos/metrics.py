@@ -22,13 +22,21 @@ EPS = 1e-8
 # ---------------------------------------------------------------------------
 
 def load_label_map(path: str, void_label: int = 255) -> np.ndarray:
-    """Load a label-map PNG as an int32 array.  Supports 8-bit and 16-bit."""
-    img = Image.open(path)
-    if img.mode in ("I;16", "I"):
-        arr = np.array(img, dtype=np.int32)
-    else:
-        arr = np.array(img.convert("L"), dtype=np.int32)
-    return arr
+    """Preserve integer indices, including palette PNGs and 16-bit labels."""
+    with Image.open(path) as img:
+        if img.mode not in ("L", "P", "I", "I;16", "I;16L", "I;16B"):
+            raise ValueError(f"Expected an indexed label map, got {img.mode}: {path}")
+        return np.array(img, dtype=np.int32)
+
+
+def resize_label_map(pred: np.ndarray, shape: tuple[int, int]) -> np.ndarray:
+    if pred.ndim != 2 or not np.issubdtype(pred.dtype, np.integer):
+        raise ValueError("Label maps must be two-dimensional integer arrays")
+    if pred.shape == shape:
+        return pred
+    # Signed I mode preserves explicit negative rejection IDs during resizing.
+    image = Image.fromarray(pred.astype(np.int32))
+    return np.array(image.resize((shape[1], shape[0]), Image.Resampling.NEAREST), dtype=np.int32)
 
 
 def accumulate_confusion(
@@ -36,156 +44,173 @@ def accumulate_confusion(
     gt: np.ndarray,
     num_classes: int,
     void_label: int = 255,
+    *,
+    num_candidates: int | None = None,
+    rejection_label: int | None = None,
 ) -> np.ndarray:
-    """Accumulate an N×N confusion matrix for one image pair."""
-    pred = pred.flatten().astype(np.int64)
-    gt = gt.flatten().astype(np.int64)
+    """GT rows × candidate columns, plus an optional rejection column.
+
+    Evaluation classes occupy the candidate prefix [0, num_classes). Extra
+    candidates and declared rejection pixels remain in GT row totals (FN).
+    Undeclared prediction IDs raise; they are never clipped or dropped.
+    """
+    k = num_classes if num_candidates is None else num_candidates
+    if num_classes <= 0 or k < num_classes:
+        raise ValueError("Require num_candidates >= num_classes > 0")
+    if rejection_label is not None and 0 <= rejection_label < k:
+        raise ValueError("rejection_label must be outside the candidate range")
+    pred, gt = np.asarray(pred), np.asarray(gt)
+    if pred.shape != gt.shape or pred.ndim != 2:
+        raise ValueError("Prediction and GT must be equally shaped 2-D label maps")
+    if not all(np.issubdtype(a.dtype, np.integer) for a in (pred, gt)):
+        raise ValueError("Label maps must contain integer IDs")
+    allowed = (pred >= 0) & (pred < k)
+    if rejection_label is not None:
+        allowed |= pred == rejection_label
+    if not allowed.all():
+        raise ValueError(f"Unexpected prediction IDs: {np.unique(pred[~allowed])[:10].tolist()}")
     valid = (gt >= 0) & (gt != void_label) & (gt < num_classes)
-    pred = pred[valid]
-    gt = gt[valid]
-    # Clamp pred to valid range so out-of-vocab predictions don't crash.
-    pred = np.clip(pred, 0, num_classes - 1)
-    conf = np.bincount(num_classes * gt + pred, minlength=num_classes ** 2)
-    return conf.reshape(num_classes, num_classes)
+    p, g = pred[valid].astype(np.int64), gt[valid].astype(np.int64)
+    columns = k + int(rejection_label is not None)
+    if rejection_label is not None:
+        p = np.where(p == rejection_label, k, p)
+    return np.bincount(columns * g + p, minlength=num_classes * columns).reshape(num_classes, columns)
 
 
 def miou_from_confusion(conf: np.ndarray) -> tuple[np.ndarray, float]:
-    """Return (per_class_iou, mean_iou) from an accumulated confusion matrix."""
-    tp = np.diag(conf)
-    fp = conf.sum(axis=0) - tp
-    fn = conf.sum(axis=1) - tp
-    denom = tp + fp + fn
+    """Union-supported mIoU; extra columns contribute FN but no extra classes."""
+    n = conf.shape[0]
+    if conf.ndim != 2 or conf.shape[1] < n:
+        raise ValueError("Confusion matrix must have at least as many columns as GT rows")
+    tp = np.diag(conf[:, :n])
+    denom = conf.sum(axis=1) + conf[:, :n].sum(axis=0) - tp
     present = denom > 0
     per_class = np.where(present, tp / np.maximum(denom, 1), np.nan)
-    miou = float(np.nanmean(per_class)) if present.any() else 0.0
-    return per_class, miou
+    return per_class, float(np.nanmean(per_class)) if present.any() else 0.0
 
 
-# ---------------------------------------------------------------------------
-# Standard-tier evaluation (semantic tasks, E1/E2/E3)
-# ---------------------------------------------------------------------------
+@dataclass
+class DenseRegionStatistics:
+    """One region per image–GT-class, matched by maximum IoU on valid GT pixels.
+
+    Each candidate has one whole-image mask; this is not instance/proposal
+    matching. Ties choose the lowest candidate ID. Rejection is not a mask.
+    """
+    confusion: np.ndarray
+    gt_counts: np.ndarray
+    pred_counts: np.ndarray
+    gt_ids: np.ndarray
+    best_ids: np.ndarray
+    best_ious: np.ndarray
+
+    def counts(self, threshold: float) -> tuple[int, int]:
+        localized = self.best_ious >= threshold
+        return int(localized.sum()), int((localized & (self.best_ids == self.gt_ids)).sum())
+
+
+def dense_region_statistics(
+    pred: np.ndarray, gt: np.ndarray, num_classes: int, void_label: int = 255,
+    *, num_candidates: int | None = None, rejection_label: int | None = None,
+) -> DenseRegionStatistics:
+    k = num_classes if num_candidates is None else num_candidates
+    conf = accumulate_confusion(pred, gt, num_classes, void_label,
+                                num_candidates=k, rejection_label=rejection_label)
+    gt_counts = conf.sum(axis=1)
+    pred_counts = conf[:, :k].sum(axis=0)
+    gt_ids = np.flatnonzero(gt_counts)
+    inter = conf[gt_ids, :k].astype(np.float64)
+    union = gt_counts[gt_ids, None] + pred_counts[None, :] - inter
+    ious = np.divide(inter, union, out=np.zeros_like(inter), where=union > 0)
+    best_ids = np.argmax(ious, axis=1)
+    best_ious = ious[np.arange(len(gt_ids)), best_ids]
+    best_ids = np.where(best_ious > 0, best_ids, -1)
+    return DenseRegionStatistics(conf, gt_counts, pred_counts, gt_ids, best_ids, best_ious)
+
 
 @dataclass
 class SemanticResult:
-    """Holds results of semantic evaluation for one dataset run."""
-    # Standard tier
     miou: float = 0.0
-    per_class_iou: list[float] = field(default_factory=list)   # length = num_classes
+    per_class_iou: list[float] = field(default_factory=list)
     num_classes: int = 0
+    num_candidates: int = 0
     num_images: int = 0
-
-    # Exploratory tier – E1
     pixel_accuracy: float = 0.0
     mean_class_accuracy: float = 0.0
     per_class_present: list[bool] = field(default_factory=list)
-
-    # Exploratory tier – E2 (MCMR)
-    mcmr_05: float = 0.0     # primary: τ = 0.5
-    mcmr_075: float = 0.0    # strict:  τ = 0.75
-
-    # E2 vocabulary-robustness drop (filled by summarize_results, not eval)
+    mcmr_05: float | None = None
+    mcmr_075: float | None = None
+    gt_class_regions: int = 0
+    localized_pairs_at_05: int = 0
+    mismatch_pairs_at_05: int = 0
+    localized_pairs_at_075: int = 0
+    mismatch_pairs_at_075: int = 0
+    coverage_at_05: float | None = None
+    coverage_at_075: float | None = None
+    ziou_gt_supported: float | None = None
+    ziou_union_supported: float | None = None
+    never_predicted_class_rate: float | None = None
+    predicted_but_zero_iou_class_rate: float | None = None
+    metric_version: str = "dense_class_region_max_iou_v2"
+    miou_denominator: str = "union_supported_eval_classes"
     delta_vocab: float | None = None
 
 
 def evaluate_semantic(
-    gt_maps: list[np.ndarray],
-    pred_maps: list[np.ndarray],
-    num_classes: int,
-    void_label: int = 255,
+    gt_maps: list[np.ndarray], pred_maps: list[np.ndarray], num_classes: int,
+    void_label: int = 255, *, num_candidates: int | None = None,
+    rejection_label: int | None = None,
 ) -> SemanticResult:
-    """Evaluate a list of (gt, pred) label-map pairs.
-
-    All exploratory readouts are computed in the same pass as mIoU.
-    """
-    conf = np.zeros((num_classes, num_classes), dtype=np.int64)
-    mcmr_05_localized = 0
-    mcmr_05_matched = 0
-    mcmr_075_localized = 0
-    mcmr_075_matched = 0
-    total_correct_pixels = 0
-    total_valid_pixels = 0
-
+    if len(gt_maps) != len(pred_maps):
+        raise ValueError("GT and prediction counts differ")
+    k = num_classes if num_candidates is None else num_candidates
+    if num_classes <= 0 or k < num_classes:
+        raise ValueError("Require num_candidates >= num_classes > 0")
+    conf = np.zeros((num_classes, k + int(rejection_label is not None)), dtype=np.int64)
+    loc05 = match05 = loc075 = match075 = regions = 0
     for gt, pred in zip(gt_maps, pred_maps):
-        # Resize pred to gt shape if needed.
-        if pred.shape != gt.shape:
-            img = Image.fromarray(pred.astype(np.uint16))
-            img = img.resize((gt.shape[1], gt.shape[0]), resample=Image.Resampling.NEAREST)
-            pred = np.array(img, dtype=np.int32)
-
-        conf += accumulate_confusion(pred, gt, num_classes, void_label)
-
-        # Pixel accuracy (exploratory)
-        valid = (gt >= 0) & (gt != void_label) & (gt < num_classes)
-        if valid.any():
-            total_correct_pixels += int((pred[valid] == gt[valid]).sum())
-            total_valid_pixels += int(valid.sum())
-
-        # MCMR (exploratory)
-        m05, m075 = _mcmr_one_image(pred, gt, num_classes, void_label)
-        mcmr_05_localized += m05[0]
-        mcmr_05_matched += m05[1]
-        mcmr_075_localized += m075[0]
-        mcmr_075_matched += m075[1]
-
+        pred = resize_label_map(pred, gt.shape)
+        stats = dense_region_statistics(pred, gt, num_classes, void_label,
+                                       num_candidates=k, rejection_label=rejection_label)
+        conf += stats.confusion
+        a, b = stats.counts(0.5)
+        c, d = stats.counts(0.75)
+        loc05 += a
+        match05 += b
+        loc075 += c
+        match075 += d
+        regions += len(stats.gt_ids)
     per_class_iou, miou = miou_from_confusion(conf)
-
-    # Per-class accuracy (exploratory)
-    tp_per_class = np.diag(conf)
-    gt_per_class = conf.sum(axis=1)
-    present = gt_per_class > 0
-    per_class_acc = np.where(present, tp_per_class / np.maximum(gt_per_class, 1), np.nan)
-    mean_class_acc = float(np.nanmean(per_class_acc)) if present.any() else 0.0
-
-    pixel_acc = total_correct_pixels / max(total_valid_pixels, 1)
-
-    mcmr_05 = (mcmr_05_localized - mcmr_05_matched) / max(mcmr_05_localized, 1)
-    mcmr_075 = (mcmr_075_localized - mcmr_075_matched) / max(mcmr_075_localized, 1)
-
+    tp = np.diag(conf[:, :num_classes])
+    gt_counts = conf.sum(axis=1)
+    pred_counts = conf[:, :num_classes].sum(axis=0)
+    present = gt_counts > 0
+    union_present = gt_counts + pred_counts - tp > 0
+    def rate(mask: np.ndarray, support: np.ndarray) -> float | None:
+        return float((mask & support).sum() / support.sum()) if support.any() else None
     return SemanticResult(
-        miou=miou,
-        per_class_iou=per_class_iou.tolist(),
-        num_classes=num_classes,
-        num_images=len(gt_maps),
-        pixel_accuracy=float(pixel_acc),
-        mean_class_accuracy=mean_class_acc,
-        per_class_present=present.tolist(),
-        mcmr_05=float(mcmr_05),
-        mcmr_075=float(mcmr_075),
+        miou=miou, per_class_iou=per_class_iou.tolist(), num_classes=num_classes,
+        num_candidates=k, num_images=len(gt_maps),
+        pixel_accuracy=float(tp.sum() / max(gt_counts.sum(), 1)),
+        mean_class_accuracy=float((tp[present] / gt_counts[present]).mean()) if present.any() else 0.0,
+        per_class_present=present.tolist(), gt_class_regions=regions,
+        localized_pairs_at_05=loc05, mismatch_pairs_at_05=loc05-match05,
+        localized_pairs_at_075=loc075, mismatch_pairs_at_075=loc075-match075,
+        mcmr_05=(loc05-match05)/loc05 if loc05 else None,
+        mcmr_075=(loc075-match075)/loc075 if loc075 else None,
+        coverage_at_05=loc05/regions if regions else None,
+        coverage_at_075=loc075/regions if regions else None,
+        ziou_gt_supported=rate(tp == 0, present),
+        ziou_union_supported=rate(tp == 0, union_present),
+        never_predicted_class_rate=rate(pred_counts == 0, present),
+        predicted_but_zero_iou_class_rate=rate((pred_counts > 0) & (tp == 0), present),
     )
 
 
 def _mcmr_one_image(
-    pred: np.ndarray,
-    gt: np.ndarray,
-    num_classes: int,
-    void_label: int,
+    pred: np.ndarray, gt: np.ndarray, num_classes: int, void_label: int,
 ) -> tuple[tuple[int, int], tuple[int, int]]:
-    """Return (localized_05, matched_05), (localized_075, matched_075) for one image."""
-    loc05 = loc075 = matched05 = matched075 = 0
-    for c in range(num_classes):
-        gt_mask = (gt == c)
-        if not gt_mask.any():
-            continue
-        # Find predicted class with most overlap on GT region.
-        pred_on_gt = pred[gt_mask & (gt != void_label)]
-        if pred_on_gt.size == 0:
-            continue
-        pred_on_gt = np.clip(pred_on_gt, 0, num_classes - 1)
-        counts = np.bincount(pred_on_gt, minlength=num_classes)
-        best_p = int(np.argmax(counts))
-        pred_mask = (pred == best_p)
-        inter = int((pred_mask & gt_mask).sum())
-        union = int((pred_mask | gt_mask).sum())
-        best_iou = inter / union if union > 0 else 0.0
-        if best_iou >= 0.5:
-            loc05 += 1
-            if best_p == c:
-                matched05 += 1
-        if best_iou >= 0.75:
-            loc075 += 1
-            if best_p == c:
-                matched075 += 1
-    return (loc05, matched05), (loc075, matched075)
+    stats = dense_region_statistics(pred, gt, num_classes, void_label)
+    return stats.counts(0.5), stats.counts(0.75)
 
 
 def delta_vocab(miou_compact: float, miou_large: float) -> float:

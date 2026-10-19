@@ -36,6 +36,8 @@ def evaluate(
     num_classes: int | None = None,
     void_label: int = 255,
     prediction_label_offset: int = 0,
+    num_candidates: int | None = None,
+    rejection_label: int | None = None,
 ) -> dict[str, object]:
     samples = load_manifest(manifest)
     predictions = load_predictions(predictions_path)
@@ -51,23 +53,17 @@ def evaluate(
         pred_maps = [load_label_map(str(predictions[s.image_id].mask_path), void_label) for s in samples]
         if prediction_label_offset:
             pred_maps = [
-                np.clip(pred.astype(np.int32) + prediction_label_offset, 0, num_classes - 1)
+                pred.astype(np.int32) + prediction_label_offset
                 for pred in pred_maps
             ]
-        result_obj: SemanticResult = evaluate_semantic(gt_maps, pred_maps, num_classes, void_label)
-        result: dict[str, object] = {
-            "num_samples": len(samples),
-            "task": task,
-            "num_classes": num_classes,
-            # Standard tier
-            "miou": result_obj.miou,
-            # Exploratory tier
-            "pixel_accuracy": result_obj.pixel_accuracy,
-            "mean_class_accuracy": result_obj.mean_class_accuracy,
-            "mcmr_05": result_obj.mcmr_05,
-            "mcmr_075": result_obj.mcmr_075,
-            "per_class_iou": result_obj.per_class_iou,
+        result_obj = evaluate_semantic(
+            gt_maps, pred_maps, num_classes, void_label,
+            num_candidates=num_candidates, rejection_label=rejection_label,
+        )
+        result = {
+            **asdict(result_obj), "num_samples": len(samples), "task": task,
             "prediction_label_offset": prediction_label_offset,
+            "rejection_label": rejection_label,
         }
         return result
 
@@ -111,6 +107,8 @@ def main() -> None:
     parser.add_argument("--predictions", required=True, type=Path)
     parser.add_argument("--task", choices=["semantic", "mask-only", "class-aware"], required=True)
     parser.add_argument("--num-classes", type=int, help="Required for --task semantic")
+    parser.add_argument("--num-candidates", type=int, help="Candidates include the unchanged evaluation-class prefix")
+    parser.add_argument("--rejection-label", type=int, help="Explicit rejection ID after applying the label offset")
     parser.add_argument("--void-label", type=int, default=255)
     parser.add_argument("--prediction-label-offset", type=int, default=0)
     parser.add_argument("--threshold", type=float, default=0.5, help="Binary mask threshold (mask-only/class-aware)")
@@ -125,6 +123,8 @@ def main() -> None:
         num_classes=args.num_classes,
         void_label=args.void_label,
         prediction_label_offset=args.prediction_label_offset,
+        num_candidates=args.num_candidates,
+        rejection_label=args.rejection_label,
     )
     text = json.dumps(result, indent=2, ensure_ascii=False)
     if args.out:

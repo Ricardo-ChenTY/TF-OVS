@@ -46,7 +46,7 @@ DATASETS = {
         "vocab": ROOT / "configs" / "vocab" / "coco_stuff_171.txt",
         "num_classes": 171,
         "void_label": 255,
-        "prediction_label_offset": -1,
+        "prediction_label_offset": 0,
     },
     "context459": {
         "manifest": ROOT / "data" / "manifests" / "context459_val.jsonl",

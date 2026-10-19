@@ -106,7 +106,7 @@ class SamAmgSiglipAdapter(MethodAdapter):
 
         # SigLIP via open_clip
         Path(self.cache_dir).mkdir(parents=True, exist_ok=True)
-        self.siglip_model_obj, self.siglip_preprocess, _ = open_clip.create_model_and_transforms(
+        self.siglip_model_obj, _, self.siglip_preprocess = open_clip.create_model_and_transforms(
             self.siglip_model, pretrained=self.siglip_pretrained, cache_dir=self.cache_dir
         )
         self.siglip_model_obj.eval().to(self.device)
@@ -151,7 +151,9 @@ class SamAmgSiglipAdapter(MethodAdapter):
         image_np = np.asarray(image_rgb)
 
         masks = self.mask_generator.generate(image_np)
-        num_classes = self.num_classes or len(vocabulary)
+        num_classes = len(vocabulary)  # candidate axis, independent of evaluation GT
+        if not 0 < num_classes <= 65536:
+            raise ValueError("PNG predictions require 1..65536 candidates")
 
         if not masks:
             label_map = np.zeros((H, W), dtype=np.uint8 if num_classes <= 256 else np.uint16)
@@ -185,7 +187,6 @@ class SamAmgSiglipAdapter(MethodAdapter):
                 label_map[update] = cls
                 confidence_map[update] = conf
 
-            label_map = np.clip(label_map, 0, num_classes - 1)
 
         pred_dir = output_dir / "pred_masks"
         pred_dir.mkdir(parents=True, exist_ok=True)

@@ -12,6 +12,7 @@ from PIL import Image
 
 from tf_ovos.data import load_manifest
 from tf_ovos.metrics import load_label_map
+from tf_ovos.result_sources import read_unique_diagnostics
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -92,15 +93,10 @@ def read_official_best() -> dict[tuple[str, str], dict[str, str]]:
 
 def read_table9_mcmr() -> dict[str, float]:
     vals: dict[str, list[float]] = {}
-    for path in [OUT_DIR / "table9_diagnostic_probes.csv", OUT_DIR / "san_diag" / "table9_diagnostic_probes.csv"]:
-        if not path.exists():
-            continue
-        with path.open(newline="") as handle:
-            for row in csv.DictReader(handle):
-                if row["dataset"] not in {"context459", "ade847"}:
-                    continue
-                if row.get("mcmr_at_05"):
-                    vals.setdefault(row["method"], []).append(float(row["mcmr_at_05"]))
+    paths = [OUT_DIR / "table9_diagnostic_probes.csv", OUT_DIR / "san_diag" / "table9_diagnostic_probes.csv"]
+    for row in read_unique_diagnostics(paths):
+        if row["dataset"] in {"context459", "ade847"} and row.get("mcmr_at_05"):
+            vals.setdefault(row["method"], []).append(float(row["mcmr_at_05"]))
     return {method: float(np.mean(v)) for method, v in vals.items()}
 
 
@@ -163,6 +159,22 @@ def pred_path(pred_dir: Path, image_id: str) -> Path:
 
 
 def compute_map_ziou(method: str, dataset: str) -> tuple[int, int, float]:
+    return compute_map_miou_ziou(method, dataset)[1]
+
+
+def compute_map_miou_ziou(method: str, dataset: str) -> tuple[float, tuple[int, int, float]]:
+    """Reconstruct both mIoU and the ZIoU finite-stats triple directly from
+    the saved artifact PNGs, bypassing whatever log a method's own official
+    run produced. Used for FreeDA on context459/ade847, where FreeDA's own
+    log is independently confirmed to be internally truncated (see
+    TMLR26_Bench/plan.md section 2.2): everything past a certain point in
+    the vocabulary's alphabetical order reads back as an implausible exact
+    IoU=0.0/Acc=nan (e.g. "person", "sky", "water" reporting zero), while
+    this reconstruction was verified to match FreeDA's own log exactly on
+    the two other datasets (context59, ade20k) where the log is not
+    truncated -- confirming this reconstruction pipeline faithfully
+    reflects FreeDA's real predictions.
+    """
     _, manifest, num_classes, void_label, offset = DATASETS[dataset]
     inter = np.zeros(num_classes, dtype=np.float64)
     union = np.zeros(num_classes, dtype=np.float64)
@@ -191,7 +203,9 @@ def compute_map_ziou(method: str, dataset: str) -> tuple[int, int, float]:
         union += gt_counts + pred_counts - same_counts
     finite = union > 0
     iou = np.divide(inter[finite], union[finite], out=np.zeros_like(inter[finite]), where=union[finite] > 0)
-    return finite_stats([float(v) for v in iou])
+    iou_list = [float(v) for v in iou]
+    miou = 100.0 * float(np.mean(iou_list)) if iou_list else float("nan")
+    return miou, finite_stats(iou_list)
 
 
 def parse_san_log() -> dict[str, tuple[float, tuple[int, int, float]]]:
@@ -266,7 +280,16 @@ def main() -> None:
                 ziou[dataset] = stats[2]
                 finite_counts[dataset] = f"{stats[1]}/{stats[0]}"
             elif source == "freeda":
-                m, stats = parse_freeda_log(ROOT / FREEDA_LOGS[dataset], dataset)
+                if dataset in {"context459", "ade847"}:
+                    # FreeDA's own log is internally truncated on these two
+                    # datasets (confirmed: everything past a certain point
+                    # in the vocabulary reads back as an implausible exact
+                    # IoU=0.0/Acc=nan -- see plan.md section 2.2). Use our
+                    # own reconstruction instead, which was verified to
+                    # match FreeDA's own log exactly on context59/ade20k.
+                    m, stats = compute_map_miou_ziou(method, dataset)
+                else:
+                    m, stats = parse_freeda_log(ROOT / FREEDA_LOGS[dataset], dataset)
                 miou[dataset] = m
                 ziou[dataset] = stats[2]
                 finite_counts[dataset] = f"{stats[1]}/{stats[0]}"
@@ -297,6 +320,12 @@ def main() -> None:
             note = "ZIoU from log; MCMR from converted SAN maps"
         elif method == "cliptrase":
             note = "ZIoU map-proxy; MCMR from dense-map diagnostics"
+        elif method == "freeda":
+            note = (
+                "Ctx459/ADE847 mIoU+ZIoU from our own reconstruction, not FreeDA's own "
+                "log (log is internally truncated past a point in the vocabulary; "
+                "see plan.md 2.2)"
+            )
 
         out = {
             "method": display,

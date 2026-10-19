@@ -1,0 +1,5 @@
+# Preserve frozen evidence and runtime patches byte for byte.
+docs/rebuttal/artifacts/** -text
+docs/rebuttal/evidence/** -text whitespace=cr-at-eol
+docs/rebuttal/reproduction/** -text
+docs/rebuttal/reproduction/corrclip_runtime/** -whitespace
